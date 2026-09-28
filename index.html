@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cybersecurity-kennisbank · Leesversie</title>
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css">
+<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js" defer></script><script src="./app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="Kennisbank startpagina"><span class="brand-mark">&gt;_</span><span>Kennisbank<span class="brand-sub">CYBERSECURITY &amp; LABS</span></span></a>
+  <div class="search-wrap"><span aria-hidden="true" class="search-icon">⌕</span><input id="search" type="search" placeholder="Zoek commando, optie of onderwerp…" aria-label="Zoeken in de kennisbank" autocomplete="off"><kbd>Ctrl K</kbd></div>
+  <button id="advanced-toggle" class="advanced-toggle" aria-haspopup="dialog" aria-controls="advanced-search" aria-expanded="false">Uitgebreid zoeken</button>
+</header>
+<nav class="section-bar" aria-label="Onderdelen van de kennisbank">
+  <button id="home" class="home-button">⌂ Startpagina</button>
+  <label for="section-switch">Onderdeel</label><select id="section-switch" aria-label="Onderdeel kiezen"><option value="">Startpagina</option></select>
+  <label class="search-domain-label" for="search-domain">Zoekbereik</label><select id="search-domain" aria-label="Zoekbereik"><option value="current">Dit onderdeel</option><option value="all">Hele kennisbank</option></select>
+</nav>
+<div class="workspace">
+<aside class="sidebar" aria-label="Navigatie">
+  <div class="sidebar-heading" id="section-heading">KENNISBANK</div>
+  <button class="category active" data-category=""><span>Alle categorieën</span><span id="catalog-count"></span></button>
+  <nav class="browse-shortcuts" aria-label="Bladeren"><button data-browse="catalog">Catalogus</button><button data-browse="tasks">Zoeken op taak</button></nav>
+  <nav id="section-links" aria-label="Onderdeel openen"></nav>
+  <nav id="categories"></nav>
+  <div class="sidebar-foot"><strong>Openbare leesversie</strong><span id="progress-summary">Wordt geladen…</span><button id="sources" class="quiet-button">Bronnen en afbakening ↗</button></div>
+</aside>
+<section class="results-panel" aria-label="Zoekresultaten">
+  <nav class="mobile-shortcuts" aria-label="Bladeren"><button data-browse="catalog">Catalogus</button><button data-browse="tasks">Zoeken op taak</button></nav>
+  <div class="result-heading"><span id="result-count" role="status">Catalogus laden…</span><button id="reset" class="quiet-button">Wis filters</button></div>
+  <div id="results" class="results" aria-label="Zoekresultaten"></div>
+  <button id="more" class="more" hidden>Toon meer resultaten</button>
+  <p class="search-note">Zoekt in commando’s, taken en kennispagina’s. Het zoekbereik bepaalt welke onderdelen worden meegenomen. Kies bij Uitgebreid zoeken welke inhoud wordt doorzocht. Externe handleidingen worden niet doorzocht.</p>
+</section>
+<main id="detail" class="detail" aria-label="Inhoud lezen">
+  <div class="empty-state"><span class="terminal-mark">&gt;_</span><h1>Je cybersecurity-kennisbank</h1><p>De commandocatalogus wordt geladen.</p></div>
+</main>
+</div>
+<dialog id="advanced-search" aria-labelledby="advanced-title">
+  <header class="advanced-heading"><h2 id="advanced-title">Uitgebreid zoeken</h2><button id="close-advanced" aria-label="Uitgebreid zoeken sluiten">×</button></header>
+  <fieldset class="scope-group"><legend>Zoeken in</legend>
+    <p>Selecteer welke inhoud je zoekterm moet bevatten.</p>
+    <div id="search-scopes"></div>
+    <div class="scope-actions"><button id="scope-all" type="button">Alle zoekgebieden</button><button id="scope-tasks" type="button">Alleen taken</button></div>
+  </fieldset>
+  <h3>Resultaten beperken tot</h3>
+  <div class="filters">
+    <label>Commandotype<select id="command-type" aria-label="Commandotype"><option value="">Alle commandotypes</option></select></label>
+    <label>Toepassingsgebied<select id="application-area" aria-label="Toepassingsgebied"><option value="">Alle toepassingsgebieden</option></select></label>
+    <label>Inhoud<select id="status"><option value="">Alle inhoud</option><option value="Uitgewerkt">Uitgewerkt</option><option value="Geregistreerd">Nog niet uitgewerkt</option></select></label>
+    <select id="progress" hidden aria-hidden="true"><option value=""></option></select>
+  </div>
+  <footer class="advanced-footer"><button id="reset-advanced" class="quiet-button">Wis filters</button><button id="show-results" class="primary-button">Toon resultaten</button></footer>
+</dialog>
+<div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+</body></html>
+
