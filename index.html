@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cybersecurity-kennisbank · Leesversie</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css">
-<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js" defer></script><script src="./app.js" defer></script>
+<link rel="stylesheet" href="./styles.css?v=9c26e4241201">
+<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js?v=f81738969673" defer></script><script src="./app.js?v=972b11246495" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -27,6 +27,12 @@
   <nav id="categories"></nav>
   <div class="sidebar-foot"><strong>Openbare leesversie</strong><span id="progress-summary">Wordt geladen…</span><button id="sources" class="quiet-button">Bronnen en afbakening ↗</button></div>
 </aside>
+  <section class="filters quick-filters" aria-label="Zoekresultaten filteren">
+    <label>Commandotype<select id="command-type" aria-label="Commandotype"><option value="">Alle commandotypes</option></select></label>
+    <label>Toepassingsgebied<select id="application-area" aria-label="Toepassingsgebied"><option value="">Alle toepassingsgebieden</option></select></label>
+    <label>Inhoud<select id="status"><option value="">Alle inhoud</option><option value="Uitgewerkt">Uitgewerkt</option><option value="Geregistreerd">Nog niet uitgewerkt</option></select></label>
+    <select id="progress" hidden aria-hidden="true"><option value=""></option></select>
+  </section>
 <section class="results-panel" aria-label="Zoekresultaten">
   <nav class="mobile-shortcuts" aria-label="Bladeren"><button data-browse="catalog">Catalogus</button><button data-browse="tasks">Zoeken op taak</button></nav>
   <div class="result-heading"><span id="result-count" role="status">Catalogus laden…</span><button id="reset" class="quiet-button">Wis filters</button></div>
@@ -45,13 +51,6 @@
     <div id="search-scopes"></div>
     <div class="scope-actions"><button id="scope-all" type="button">Alle zoekgebieden</button><button id="scope-tasks" type="button">Alleen taken</button></div>
   </fieldset>
-  <h3>Resultaten beperken tot</h3>
-  <div class="filters">
-    <label>Commandotype<select id="command-type" aria-label="Commandotype"><option value="">Alle commandotypes</option></select></label>
-    <label>Toepassingsgebied<select id="application-area" aria-label="Toepassingsgebied"><option value="">Alle toepassingsgebieden</option></select></label>
-    <label>Inhoud<select id="status"><option value="">Alle inhoud</option><option value="Uitgewerkt">Uitgewerkt</option><option value="Geregistreerd">Nog niet uitgewerkt</option></select></label>
-    <select id="progress" hidden aria-hidden="true"><option value=""></option></select>
-  </div>
   <footer class="advanced-footer"><button id="reset-advanced" class="quiet-button">Wis filters</button><button id="show-results" class="primary-button">Toon resultaten</button></footer>
 </dialog>
 <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>

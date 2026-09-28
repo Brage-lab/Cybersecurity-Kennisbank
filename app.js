@@ -199,7 +199,24 @@ async function openDocument(id,anchor="",updateHistory=true) {
     if(initial||skip)node.remove();
    }
   } else {const h1=article.querySelector("h1");if(h1)h1.remove();}
-  article.querySelectorAll("table").forEach(table=>{const wrap=element("div","table-scroll");table.before(wrap);wrap.append(table);});
+  article.querySelectorAll("table").forEach(table=>{
+   const wrap=element("div","table-scroll");table.before(wrap);wrap.append(table);
+   const headers=[...table.querySelectorAll("thead th")].map(th=>th.textContent.trim().toLowerCase());
+   if(headers.length===3 && /wat wil ik doen|ik wil/.test(headers[0]) && /opdracht|commando/.test(headers[1])){
+    wrap.classList.add("task-table-wrap");table.classList.add("task-table");table.setAttribute("role","table");
+    table.querySelectorAll("thead,tbody").forEach(group=>group.setAttribute("role","rowgroup"));
+    table.querySelectorAll("tr").forEach(row=>row.setAttribute("role","row"));
+    table.querySelectorAll("th").forEach(th=>th.setAttribute("role","columnheader"));
+    table.querySelectorAll("tbody tr").forEach(row=>{
+     const cells=[...row.cells];cells.forEach(cell=>cell.setAttribute("role","cell"));
+     if(cells.length!==3)return;
+     const command=cells[1].textContent.trim(),button=element("button","task-copy","Kopieer opdracht");
+     button.type="button";button.setAttribute("aria-label","Kopieer opdracht: "+command);
+     button.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(command);button.textContent="Gekopieerd";setTimeout(()=>button.textContent="Kopieer opdracht",1600);}catch{notify("Kopiëren is niet beschikbaar. Selecteer de opdracht om deze te kopiëren.",true);}});
+     cells[1].append(button);
+    });
+   }
+  });
   article.querySelectorAll("pre").forEach(pre=>{
    const code=pre.querySelector("code");if(!code)return;
    const button=element("button","copy-button","Kopieer");button.setAttribute("aria-label","Kopieer dit voorbeeld");
@@ -229,9 +246,9 @@ function resetFilters() {
  return search();
 }
 $("#search").addEventListener("input",()=>{showResults();clearTimeout(searchTimer);model.limit=60;searchTimer=setTimeout(search,160);});
-$("#status").addEventListener("change",()=>{model.limit=60;search();});
-$("#progress").addEventListener("change",()=>{model.limit=60;search();});
-for(const id of ["#command-type","#application-area"])$(id).addEventListener("change",()=>{model.limit=60;search();});
+$("#status").addEventListener("change",()=>{model.limit=60;showResults();search();});
+$("#progress").addEventListener("change",()=>{model.limit=60;showResults();search();});
+for(const id of ["#command-type","#application-area"])$(id).addEventListener("change",()=>{model.limit=60;showResults();search();});
 $("#reset").addEventListener("click",resetFilters);
 $("#more").addEventListener("click",()=>{model.limit+=60;search();});
 const advanced=$("#advanced-search");
@@ -261,7 +278,7 @@ async function init() {
    for(const value of values)$(id).append(new Option(value,value));
   for(const [value,label] of Object.entries(data.search_scopes)){
    const wrap=element("label","scope-choice");const input=document.createElement("input");input.type="checkbox";input.value=value;input.checked=true;
-   input.addEventListener("change",()=>{model.limit=60;search();});wrap.append(input,document.createTextNode(label));$("#search-scopes").append(wrap);
+   input.addEventListener("change",()=>{model.limit=60;showResults();search();});wrap.append(input,document.createTextNode(label));$("#search-scopes").append(wrap);
   }
   for(const section of data.sections){
    $("#section-switch").append(new Option(section.title,section.id));
