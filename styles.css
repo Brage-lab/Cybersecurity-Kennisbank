@@ -16,6 +16,7 @@
 .classification div{min-width:0}
 .classification dt{font-size:12px;font-weight:600;color:#647580}
 .classification dd{margin:3px 0 0;color:#28565b;font-size:14px}
+.classification dd[title]{text-decoration:underline dotted #9fc2c0;text-underline-offset:3px;cursor:help}
 .reader-section{border:1px solid var(--line);border-radius:9px;margin:10px 0;background:#fff}
 .reader-section>summary{cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 18px;list-style:none;border-radius:9px;background:#f6f9fa}
 .reader-section>summary::-webkit-details-marker{display:none}
@@ -32,8 +33,12 @@
 /* Advanced search lives outside the results column. */
 .advanced-toggle{background:#eef7f4;border:1px solid #a9cbc2;border-radius:7px;padding:11px 14px;color:#215d54;white-space:nowrap;font-size:14px;font-weight:600}
 .advanced-toggle[aria-expanded=true]{background:#d9eee7}
-#advanced-search{width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 110px);overflow:auto;margin:0 18px 0 auto;inset:78px 0 auto auto;border:1px solid #cadbd8;border-radius:12px;padding:22px;box-shadow:0 16px 60px #10282d30;color:var(--nav)}
-#advanced-search::backdrop{background:#10282d20}
+dialog{width:min(600px,calc(100vw - 24px));max-height:calc(100dvh - 110px);overflow:auto;margin:0 18px 0 auto;inset:78px 0 auto auto;border:1px solid #cadbd8;border-radius:12px;padding:22px;box-shadow:0 16px 60px #10282d30;color:var(--nav)}
+dialog::backdrop{background:#10282d20}
+dialog .filters{display:flex;flex-direction:column;gap:14px;margin:18px 0}
+dialog .filters label{font-size:12px;color:#60727e;font-weight:600}
+dialog .filters input,dialog .filters select{display:block;width:100%;font-size:14px;border:1px solid #d4dfe5;border-radius:6px;padding:9px 10px;background:#fff;margin-top:6px;color:#233943}
+#add-entry-error{color:#862c35;background:#faeceb}
 .advanced-heading{display:flex;justify-content:space-between;align-items:center;gap:14px}
 .advanced-heading h2{margin:0;font-size:21px}
 .advanced-heading button{background:none;border:0;font-size:27px;color:#536e72;padding:0 5px}

@@ -4,14 +4,15 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cybersecurity-kennisbank · Leesversie</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css?v=3b990797914c">
-<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js?v=f81738969673" defer></script><script src="./app.js?v=9610643decd2" defer></script>
+<link rel="stylesheet" href="./styles.css?v=7ba9706bff00">
+<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js?v=fe23892632ff" defer></script><script src="./app.js?v=f40a6b3e1e52" defer></script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="./" aria-label="Kennisbank startpagina"><span class="brand-mark">&gt;_</span><span>Kennisbank<span class="brand-sub">CYBERSECURITY &amp; LABS</span></span></a>
   <div class="search-wrap"><span aria-hidden="true" class="search-icon">⌕</span><input id="search" type="search" placeholder="Zoek commando, optie of onderwerp…" aria-label="Zoeken in de kennisbank" autocomplete="off"><kbd>Ctrl K</kbd></div>
   <button id="advanced-toggle" class="advanced-toggle" aria-haspopup="dialog" aria-controls="advanced-search" aria-expanded="false">Uitgebreid zoeken</button>
+  <button id="add-entry-toggle" class="advanced-toggle" aria-haspopup="dialog" aria-controls="add-entry" aria-expanded="false">+ Nieuwe entry</button>
 </header>
 <nav class="section-bar" aria-label="Onderdelen van de kennisbank">
   <button id="home" class="home-button">⌂ Startpagina</button>
@@ -52,6 +53,19 @@
     <div class="scope-actions"><button id="scope-all" type="button">Alle zoekgebieden</button><button id="scope-tasks" type="button">Alleen taken</button></div>
   </fieldset>
   <footer class="advanced-footer"><button id="reset-advanced" class="quiet-button">Wis filters</button><button id="show-results" class="primary-button">Toon resultaten</button></footer>
+</dialog>
+<dialog id="add-entry" aria-labelledby="add-entry-title">
+  <header class="advanced-heading"><h2 id="add-entry-title">Nieuwe entry toevoegen</h2><button id="close-add-entry" aria-label="Sluiten">×</button></header>
+  <fieldset class="scope-group"><legend>Alleen naam, onderdeel en categorie</legend>
+    <p>De uitwerking volgt later, via het Uitwerken-vinkje op de pagina zelf.</p>
+    <div class="filters">
+      <label>Naam<input id="new-entry-name" type="text" maxlength="120" autocomplete="off"></label>
+      <label>Onderdeel<select id="new-entry-section"></select></label>
+      <label>Categorie<select id="new-entry-category"></select></label>
+    </div>
+    <p id="add-entry-error" class="read-note" hidden></p>
+  </fieldset>
+  <footer class="advanced-footer"><button id="cancel-add-entry" class="quiet-button">Annuleren</button><button id="save-add-entry" class="primary-button">Aanmaken</button></footer>
 </dialog>
 <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
 

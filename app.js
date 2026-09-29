@@ -4,6 +4,12 @@ const model = {token:"", section:"", sections:[], categories:{}, total:0, stats:
 let searchTimer, noticeTimer;
 function element(tag, cls, text) { const node=document.createElement(tag); if(cls)node.className=cls; if(text!==undefined)node.textContent=text; return node; }
 function clean(text) { return text.replace(/\\([_*[\]|])/g,"$1").replaceAll("&amp;","&").replaceAll("&lt;","<").replaceAll("&gt;",">"); }
+function shortLabel(full,maxLen=40) {
+ const seps=[";","(",". "].map(sep=>full.indexOf(sep)).filter(i=>i>=0);
+ let cut=seps.length?Math.min(...seps):full.length;
+ if(cut>maxLen){const wordCut=full.lastIndexOf(" ",maxLen);cut=wordCut>10?wordCut:maxLen;}
+ return full.slice(0,cut).trim();
+}
 function notify(message,error=false) { const box=$("#notice");box.textContent=message;box.className="notice"+(error?" error":"");box.hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>box.hidden=true,error?9000:3500); }
 async function api(url,options={}) { return publicApi(url,options); }
 function sectionInfo(id=model.section) { return model.sections.find(section=>section.id===id); }
@@ -11,7 +17,7 @@ function searchSection() { return $("#search-domain").value==="all" ? "" : model
 function renderStats() {
  const section=sectionInfo(searchSection());
  $("#catalog-count").textContent=(section?section.count:model.total).toLocaleString("nl-NL");
- $("#progress-summary").textContent="Raadplegen zonder voortgangsregistratie";
+ $("#progress-summary").textContent=model.stats.seen+" aangevinkt om uit te werken";
 }
 function updateContext() {
  const section=sectionInfo();
@@ -22,10 +28,10 @@ function updateContext() {
  $("#search").placeholder=searchSection()?"Zoek in "+section.title+"…":"Zoek in de hele kennisbank…";
  document.querySelectorAll("[data-browse]").forEach(button=>button.hidden=!section?.commands);
  $("#sources").hidden=!section?.commands;
- const showCategories=!!section?.commands;
+ const showCategories=!!section&&(!!section.commands||Object.keys(model.categories).some(id=>id.startsWith(section.id+"/")));
  $("#categories").hidden=!showCategories;
  $(".sidebar>.category").hidden=!showCategories;
- $(".sidebar>.browse-shortcuts").hidden=!showCategories;
+ $(".sidebar>.browse-shortcuts").hidden=!section?.commands;
  $("#section-links").hidden=showCategories;
  $("#section-links").querySelectorAll("button").forEach(button=>button.classList.toggle("active",button.dataset.section===model.section));
  categoryButtons();renderStats();
@@ -71,7 +77,7 @@ function homeContent() {
   card.append(element("span","section-meta",section.commands?section.worked+" uitgewerkt · "+section.count.toLocaleString("nl-NL")+" commando’s":"Basis ingericht · inhoud groeit tijdens de cursus"));
   card.addEventListener("click",()=>switchSection(section.id));grid.append(card);
  }
- wrapper.append(grid,element("p","home-note","Dit is de openbare leesversie. Persoonlijke notities en voortgang blijven in de private kennisbank."));
+ wrapper.append(grid,element("p","home-note","Uitwerken-aanvinkingen blijven per pagina bewaard. Scripts en documentatie staan samen in je bestaande Git-repository."));
  return wrapper;
 }
 function selectedScopes() { return [...document.querySelectorAll("#search-scopes input:checked")].map(input=>input.value); }
@@ -112,13 +118,13 @@ function renderResults() {
   button.setAttribute("aria-label",isTask?"Taak: "+item.task_title+" — "+item.name:item.name+" — "+item.description);
   const top=element("div","result-top");
   top.append(element("span",isTask?"task-name":"command-name",isTask?item.task_title:item.name),
-   element("span","pill"+(isTask?" task":item.status==="Uitgewerkt"?" full":""),isTask?"Taak":isDocument?"Kennispagina":item.status==="Geregistreerd"?"Catalogus":item.status));
+   element("span","pill"+(isTask?" task":item.status==="Uitgewerkt"?" full":""),isTask?"Taak":item.status==="Geregistreerd"?"Catalogus":item.status==="Document"?"Kennispagina":item.status));
   button.append(top);
   if(isTask){
    button.append(element("code","task-command",item.command),element("p","task-source",item.name+(item.anchor?" · Naar voorbeeld":" · Naar commandopagina")));
   }else button.append(element("p","",clean(item.description)||"Open de entry voor de brondocumentatie."));
   button.append(element("span","result-domain",sectionInfo(item.section)?.title||item.section));
-  if(item.seen||item.applied){const flags=element("div","result-flags");if(item.seen)flags.append(element("span","","✓ Bekeken"));if(item.applied)flags.append(element("span","","✓ Toegepast"));button.append(flags);}
+  if(item.seen&&item.status!=="Uitgewerkt"){const flags=element("div","result-flags");flags.append(element("span","","✓ Uitwerken"));button.append(flags);}
   button.addEventListener("click",()=>openDocument(item.id,item.anchor||""));list.append(button);
  }
 }
@@ -163,7 +169,7 @@ async function openDocument(id,anchor="",updateHistory=true) {
   const targetSection=model.sections.find(section=>id.startsWith(section.id+"/"));
   const nextSection=targetSection?.id||"";
   if(nextSection!==model.section){model.section=nextSection;model.category="";updateContext();search();}
-  const overview=id==="README.md"||(!targetSection?.commands&&!$("#search").value);
+  const overview=id==="README.md";
   $(".workspace").classList.toggle("overview-mode",overview);
   if(updateHistory)history.pushState({id,anchor},"","#"+new URLSearchParams(anchor?{doc:id,anchor}:{doc:id}));
   const detail=$("#detail");detail.replaceChildren();
@@ -174,11 +180,18 @@ async function openDocument(id,anchor="",updateHistory=true) {
   if(data.entry){
    top.append(element("p","document-subtitle",clean(data.entry.description)));
    const classification=element("dl","classification");
-   for(const [label,values] of [["Commandotype",data.entry.command_types],["Toepassingsgebied",data.entry.application_areas],["Omgeving",data.entry.environment?[data.entry.environment]:["Zie vereisten"]]]){
-    const pair=element("div");pair.append(element("dt","",label),element("dd","",(values||["Niet geclassificeerd"]).join(" · ")));classification.append(pair);
+   const fields=data.entry.kind==="command"
+    ?[["Commandotype",data.entry.command_types],["Toepassingsgebied",data.entry.application_areas],["Omgeving",data.entry.environment?[data.entry.environment]:["Zie vereisten"]]]
+    :(data.entry.category?[["Categorie",[(model.categories[data.entry.category]||"").split(" · ").slice(1).join(" · ")||"Niet geclassificeerd"]]]:[]);
+   for(const [label,values] of fields){
+    const full=(values||["Niet geclassificeerd"]).join(" · ");
+    const short=shortLabel(full);
+    const dd=element("dd","",short);if(short!==full)dd.title=full;
+    const pair=element("div");pair.append(element("dt","",label),dd);classification.append(pair);
    }
-   top.append(classification);
-
+   if(fields.length)top.append(classification);
+   if(data.entry.status!=="Uitgewerkt"){
+ 
   }
   detail.append(top);
   if(id==="README.md"){
@@ -261,6 +274,41 @@ advanced.addEventListener("click",event=>{if(event.target===advanced){const rect
 $("#scope-all").addEventListener("click",()=>setScopes(false));
 $("#scope-tasks").addEventListener("click",()=>setScopes(true));
 $("#reset-advanced").addEventListener("click",resetFilters);
+const addEntryDialog=$("#add-entry");
+function populateAddEntryCategories(){
+ const sectionId=$("#new-entry-section").value;
+ const sel=$("#new-entry-category");sel.replaceChildren();
+ for(const [id,label] of Object.entries(model.categories)){
+  if(id.startsWith(sectionId+"/"))sel.append(new Option(label.split(" · ").slice(1).join(" · "),id));
+ }
+}
+function populateAddEntrySections(){
+ const sel=$("#new-entry-section");sel.replaceChildren();
+ for(const s of model.sections)sel.append(new Option(s.title,s.id));
+ populateAddEntryCategories();
+}
+$("#new-entry-section").addEventListener("change",populateAddEntryCategories);
+$("#add-entry-toggle").addEventListener("click",()=>{
+ populateAddEntrySections();$("#new-entry-name").value="";$("#add-entry-error").hidden=true;
+ addEntryDialog.showModal();$("#add-entry-toggle").setAttribute("aria-expanded","true");
+});
+function closeAddEntry(){addEntryDialog.close();$("#add-entry-toggle").focus();}
+$("#close-add-entry").addEventListener("click",closeAddEntry);
+$("#cancel-add-entry").addEventListener("click",closeAddEntry);
+addEntryDialog.addEventListener("close",()=>$("#add-entry-toggle").setAttribute("aria-expanded","false"));
+$("#save-add-entry").addEventListener("click",async()=>{
+ const name=$("#new-entry-name").value.trim();
+ const section=$("#new-entry-section").value;
+ const category=$("#new-entry-category").value;
+ const err=$("#add-entry-error");
+ if(!name){err.textContent="Vul een naam in.";err.hidden=false;return;}
+ if(!category){err.textContent="Kies een categorie.";err.hidden=false;return;}
+ try{
+  const data=await api("/api/create-entry",{method:"POST",headers:{"Content-Type":"application/json","X-Kennisbank-Token":model.token},body:JSON.stringify({name,section,category})});
+  closeAddEntry();notify("Toegevoegd: "+data.entry.name+" (Uitwerken aangevinkt)");
+  await search();
+ }catch(error){err.textContent=error.message;err.hidden=false;}
+});
 document.querySelectorAll("[data-browse]").forEach(button=>button.addEventListener("click",()=>{
  const root=sectionInfo()?.commands;if(root)openDocument(root+(button.dataset.browse==="tasks"?"/tasks.md":"/README.md"));
 }));
