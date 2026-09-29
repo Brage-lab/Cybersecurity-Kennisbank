@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cybersecurity-kennisbank · Leesversie</title>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="./styles.css?v=7ba9706bff00">
-<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js?v=fe23892632ff" defer></script><script src="./app.js?v=f40a6b3e1e52" defer></script>
+<link rel="stylesheet" href="./styles.css?v=dd0fa77b5498">
+<script src="./vendor/marked.umd.js" defer></script><script src="./vendor/purify.min.js" defer></script><script src="./public-api.js?v=fe23892632ff" defer></script><script src="./app.js?v=ba14831c190c" defer></script>
 </head>
 <body>
 <header class="topbar">
@@ -18,9 +18,11 @@
   <button id="home" class="home-button">⌂ Startpagina</button>
   <label for="section-switch">Onderdeel</label><select id="section-switch" aria-label="Onderdeel kiezen"><option value="">Startpagina</option></select>
   <label class="search-domain-label" for="search-domain">Zoekbereik</label><select id="search-domain" aria-label="Zoekbereik"><option value="current">Dit onderdeel</option><option value="all">Hele kennisbank</option></select>
+  <button id="sidebar-toggle" class="sidebar-toggle" aria-expanded="false" aria-controls="sidebar">☰ Categorieën</button>
 </nav>
 <div class="workspace">
-<aside class="sidebar" aria-label="Navigatie">
+<div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+<aside class="sidebar" id="sidebar" aria-label="Navigatie">
   <div class="sidebar-heading" id="section-heading">KENNISBANK</div>
   <button class="category active" data-category=""><span>Alle categorieën</span><span id="catalog-count"></span></button>
   <nav class="browse-shortcuts" aria-label="Bladeren"><button data-browse="catalog">Catalogus</button><button data-browse="tasks">Zoeken op taak</button></nav>
