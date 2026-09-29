@@ -161,6 +161,7 @@ function makeSections(article) {
 }
 function sectionFor(summary) { return summary.parentElement; }
 function slug(text) { return text.toLowerCase().replace(/[^\p{L}\p{N}_ -]/gu,"").replaceAll(" ","-"); }
+
 async function openDocument(id,anchor="",updateHistory=true) {
  const request=++model.documentRequest;
  try {
@@ -191,8 +192,7 @@ async function openDocument(id,anchor="",updateHistory=true) {
     const pair=element("div");pair.append(element("dt","",label),dd);classification.append(pair);
    }
    if(fields.length)top.append(classification);
-   if(data.entry.status!=="Uitgewerkt"){
- 
+   
   }
   detail.append(top);
   if(id==="README.md"){
@@ -201,6 +201,7 @@ async function openDocument(id,anchor="",updateHistory=true) {
   }
   const article=element("article","markdown");
   article.innerHTML=DOMPurify.sanitize(marked.parse(data.markdown,{gfm:true}),{USE_PROFILES:{html:true},FORBID_TAGS:["style","form"]});
+  
   const slugs=new Map();
   article.querySelectorAll("h1,h2,h3,h4,h5,h6").forEach(heading=>{
    const key=slug(heading.textContent);const count=slugs.get(key)||0;slugs.set(key,count+1);heading.id=key+(count?"-"+count:"");
