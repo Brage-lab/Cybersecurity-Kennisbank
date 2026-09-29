@@ -17,7 +17,7 @@ function searchSection() { return $("#search-domain").value==="all" ? "" : model
 function renderStats() {
  const section=sectionInfo(searchSection());
  $("#catalog-count").textContent=(section?section.count:model.total).toLocaleString("nl-NL");
- $("#progress-summary").textContent=model.stats.seen+" aangevinkt om uit te werken";
+ $("#progress-summary").textContent="Raadplegen zonder voortgangsregistratie";
 }
 function updateContext() {
  const section=sectionInfo();
@@ -78,7 +78,7 @@ function homeContent() {
   card.append(element("span","section-meta",section.commands?section.worked+" uitgewerkt · "+section.count.toLocaleString("nl-NL")+" commando’s":"Basis ingericht · inhoud groeit tijdens de cursus"));
   card.addEventListener("click",()=>switchSection(section.id));grid.append(card);
  }
- wrapper.append(grid,element("p","home-note","Uitwerken-aanvinkingen blijven per pagina bewaard. Scripts en documentatie staan samen in je bestaande Git-repository."));
+ wrapper.append(grid,element("p","home-note","Dit is de openbare leesversie. Persoonlijke notities en voortgang blijven in de private kennisbank."));
  return wrapper;
 }
 function selectedScopes() { return [...document.querySelectorAll("#search-scopes input:checked")].map(input=>input.value); }
@@ -277,43 +277,7 @@ advanced.addEventListener("click",event=>{if(event.target===advanced){const rect
 $("#scope-all").addEventListener("click",()=>setScopes(false));
 $("#scope-tasks").addEventListener("click",()=>setScopes(true));
 $("#reset-advanced").addEventListener("click",resetFilters);
-// LOCAL ADD ENTRY START
-const addEntryDialog=$("#add-entry");
-function populateAddEntryCategories(){
- const sectionId=$("#new-entry-section").value;
- const sel=$("#new-entry-category");sel.replaceChildren();
- for(const [id,label] of Object.entries(model.categories)){
-  if(id.startsWith(sectionId+"/"))sel.append(new Option(label.split(" · ").slice(1).join(" · "),id));
- }
-}
-function populateAddEntrySections(){
- const sel=$("#new-entry-section");sel.replaceChildren();
- for(const s of model.sections)sel.append(new Option(s.title,s.id));
- populateAddEntryCategories();
-}
-$("#new-entry-section").addEventListener("change",populateAddEntryCategories);
-$("#add-entry-toggle").addEventListener("click",()=>{
- populateAddEntrySections();$("#new-entry-name").value="";$("#add-entry-error").hidden=true;
- addEntryDialog.showModal();$("#add-entry-toggle").setAttribute("aria-expanded","true");
-});
-function closeAddEntry(){addEntryDialog.close();$("#add-entry-toggle").focus();}
-$("#close-add-entry").addEventListener("click",closeAddEntry);
-$("#cancel-add-entry").addEventListener("click",closeAddEntry);
-addEntryDialog.addEventListener("close",()=>$("#add-entry-toggle").setAttribute("aria-expanded","false"));
-$("#save-add-entry").addEventListener("click",async()=>{
- const name=$("#new-entry-name").value.trim();
- const section=$("#new-entry-section").value;
- const category=$("#new-entry-category").value;
- const err=$("#add-entry-error");
- if(!name){err.textContent="Vul een naam in.";err.hidden=false;return;}
- if(!category){err.textContent="Kies een categorie.";err.hidden=false;return;}
- try{
-  const data=await api("/api/create-entry",{method:"POST",headers:{"Content-Type":"application/json","X-Kennisbank-Token":model.token},body:JSON.stringify({name,section,category})});
-  closeAddEntry();notify("Toegevoegd: "+data.entry.name+" (Uitwerken aangevinkt)");
-  await search();
- }catch(error){err.textContent=error.message;err.hidden=false;}
-});
-// LOCAL ADD ENTRY END
+
 document.querySelectorAll("[data-browse]").forEach(button=>button.addEventListener("click",()=>{
  const root=sectionInfo()?.commands;if(root)openDocument(root+(button.dataset.browse==="tasks"?"/tasks.md":"/README.md"));
 }));
