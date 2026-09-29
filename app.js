@@ -298,3 +298,18 @@ async function init() {
 }
 init();
 
+
+
+
+// PUBLISHED ON DATE START
+(async function checkPublishedOn(){
+ const label=$("#published-on");
+ try{
+  const response=await fetch("./published.json",{cache:"no-store"});
+  if(!response.ok)throw new Error();
+  const data=await response.json();
+  label.textContent="Laatst gepubliceerd op "+data.published_at;
+  label.hidden=false;
+ }catch{label.hidden=true;}
+})();
+// PUBLISHED ON DATE END

@@ -120,3 +120,5 @@
  .task-table td:last-child a::after{content:" →";white-space:pre}
  .task-copy{display:inline-block;margin-top:6px;border:1px solid #b9cece;border-radius:5px;background:white;color:#235b5d;padding:8px 11px;font-size:12px;min-height:36px}
 }
+
+.publication-status{position:fixed;right:14px;bottom:5px;z-index:5;max-width:calc(100vw - 28px);padding:3px 8px;border:1px solid #dce5e3;border-radius:5px;background:#f8fbfa;color:#647570;font:11px/1.4 system-ui,sans-serif;box-shadow:0 1px 4px #173d4310}.publication-status button{font-size:11px;padding:0 0 0 8px;color:#0c6b62;font-weight:600}
