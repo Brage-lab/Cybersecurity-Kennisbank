@@ -1,5 +1,5 @@
 "use strict";
-const publicData=fetch(new URL("data.json?v=a854efa76fd3",document.baseURI)).then(r=>{if(!r.ok)throw Error("De leesversie kon niet laden.");return r.json();});
+const publicData=fetch(new URL("data.json?v=d53a5987e12d",document.baseURI)).then(r=>{if(!r.ok)throw Error("De leesversie kon niet laden.");return r.json();});
 async function publicApi(url, options={}) {
  if(options.method && options.method!=="GET")throw Error("Dit is een leesversie.");
  const data=await publicData, u=new URL(url,location.origin), p=u.searchParams;
